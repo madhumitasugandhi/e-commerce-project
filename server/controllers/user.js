@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import User from './../models/User.js';
+import jwt from "jsonwebtoken";
 
 const postSignup = async(req, res)=>{
     const{name, email, phone, address, password, rePassword} = req.body;
@@ -95,8 +96,13 @@ const postLogin =async (req, res)=>{
     const isPasswordMatch = bcrypt.compareSync(password, user.password);
 
     if(isPasswordMatch){
+        const jwtToken = jwt.sign({email: user.email}, process.env.JWT_SECRET);
+
+        res.setHeader("Authorization", `Bearer ${jwtToken}`);
+
         return res.status(200).json({
             success: true,
+            token: jwtToken,
             message: "Login successful"
         });
     }
