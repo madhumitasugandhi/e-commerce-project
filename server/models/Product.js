@@ -3,19 +3,19 @@ import { model, Schema } from 'mongoose';
 const productSchema = new Schema({
     name: {
         type: String,
-        require: true,
+        required: true,
     },
     shortDescription: {
         type: String,
-        require: true,
+        required: true,
     },
     longDescription: {
         type: String,
-        require: true,
+        required: true,
     },
     price: {
         type: Number,
-        require: true,
+        required: true,
     },
     currentPrice: {
         type: Number,
