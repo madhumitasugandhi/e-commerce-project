@@ -71,6 +71,41 @@ catch(error){
         message: error.message
     });
 }
-}
+};
 
-export { postSignup };
+const postLogin =async (req, res)=>{
+    const {email, password} = req.body;
+
+     if(!email || !password){
+        return res.status(400).json({
+            success: false,
+            message: "Email and Password is required"
+        });
+    }
+
+    const user = await User.findOne({email});
+
+    if (!user){
+        return res.status(404).json({
+            success: false,
+            message: "Please signup first"
+        });
+    }
+
+    const isPasswordMatch = bcrypt.compareSync(password, user.password);
+
+    if(isPasswordMatch){
+        return res.status(200).json({
+            success: true,
+            message: "Login successful"
+        });
+    }
+    else{
+        return res.status(400).json({
+            success: false,
+            message: "Invaild credentials"
+        });
+    }
+} 
+
+export { postSignup, postLogin};
