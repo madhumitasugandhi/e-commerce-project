@@ -3,9 +3,10 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 dotenv.config();
-import bcrypt from 'bcrypt';
 
-import User from './models/User.js';
+import jwt from "jsonwebtoken";
+
+import { postSignup, postLogin } from './controllers/user.js';
 
 const app = express();
 app.use(express.json());
@@ -13,89 +14,57 @@ app.use(cors());
 
 
 
-const connectDB =async ()=> {
-const conn = await mongoose.connect(process.env.MONGO_URI);
+const connectDB = async () => {
+    const conn = await mongoose.connect(process.env.MONGO_URI);
 
-if(conn){
-    console.log(`MongoDB connected Successfully`);
-}
+    if (conn) {
+        console.log(`MongoDB connected Successfully`);
+    }
 };
 
 // Basic API
-app.get("/health", (req, res)=>{
+app.get("/health", (req, res) => {
     res.status(200).json({
-        success : true,
+        success: true,
         message: "Server is running",
     })
 })
 
 //API for E-commerce application
-app.post("/signup", async(req, res)=>{
-    const{name, email, phone, address, password, rePassword} = req.body;
+app.post("/signup", postSignup);
+app.post("/login", postLogin);
 
-    if(!password){
-        return res.status(400).json({
+app.get("/test", (req, res) => {
+    const token = req.headers.authorization;
+
+    if (!token) {
+        return res.status(401).json({
             success: false,
-            message: "Password is required"
-        });
-    }
-    if(password !== rePassword){
-        return res.status(400).json({
-            success: false,
-            message: "Password dose not match"
-        });
-    }
-    if(!name){
-        return res.status(400).json({
-            success: false,
-            message: "Name is required"
-        });
-    }
-    if(!email){
-        return res.status(400).json({
-            success: false,
-            message: "Email is required"
-        });
-    }
-    if(!phone){
-        return res.status(400).json({
-            success: false,
-            message: "Contact number is required"
-        });
-    }
-    if(!address){
-        return res.status(400).json({
-            success: false,
-            message: "Address is required"
+            message: "Unauthorized",
         });
     }
 
-    const salt = bcrypt.genSaltSync(10);
+    const tokenValue = token.split(" ")[1];
 
-    try{
-    const newUser = new User({
-        name,
-        email,
-        phone,
-        address,
-        password: bcrypt.hashSync(password, salt),
-    });
+    try {
+        const decoded = jwt.verify(tokenValue, process.env.JWT_SECRET);
 
-    const savedUser = await newUser.save();
+        if (decoded) {
+            return res.json({
+                success: true,
+                message: "Authorized",
+                data: decoded,
+            });
+        }
 
-    return res.status(200).json({
-        success: true,
-        message: "Signup Successful",
-        data:savedUser,
-    });
-}
-catch(error){
-    return res.status(400).json({
-        success: false,
-        message: error.message
-    });
-}
-}) 
+    } catch (error) {
+        res.status(401).json({
+            success: false,
+            message: "Unauthorized"
+        })
+    }
+});
+
 
 //page not found API
 app.use((req, res) => {
@@ -104,7 +73,7 @@ app.use((req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT,()=>{
+app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
     connectDB();
 });
