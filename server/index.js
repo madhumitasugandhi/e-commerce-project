@@ -3,15 +3,13 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 dotenv.config();
-
-import jwt from "jsonwebtoken";
+import {jwtVerifyMiddlewar} from './middlewares/auth.js'
 
 import { postSignup, postLogin } from './controllers/user.js';
 
 const app = express();
 app.use(express.json());
 app.use(cors());
-
 
 
 const connectDB = async () => {
@@ -33,37 +31,7 @@ app.get("/health", (req, res) => {
 //API for E-commerce application
 app.post("/signup", postSignup);
 app.post("/login", postLogin);
-
-app.get("/test", (req, res) => {
-    const token = req.headers.authorization;
-
-    if (!token) {
-        return res.status(401).json({
-            success: false,
-            message: "Unauthorized",
-        });
-    }
-
-    const tokenValue = token.split(" ")[1];
-
-    try {
-        const decoded = jwt.verify(tokenValue, process.env.JWT_SECRET);
-
-        if (decoded) {
-            return res.json({
-                success: true,
-                message: "Authorized",
-                data: decoded,
-            });
-        }
-
-    } catch (error) {
-        res.status(401).json({
-            success: false,
-            message: "Unauthorized"
-        })
-    }
-});
+ 
 
 
 //page not found API
