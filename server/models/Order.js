@@ -1,7 +1,7 @@
 import { model, Schema } from 'mongoose';
 
 const orderSchema = new Schema({
-    user: {
+    userId: {
         type: Schema.Types.ObjectId,
         required: true,
         ref: "User",
@@ -11,7 +11,6 @@ const orderSchema = new Schema({
         productId: {
             type: Schema.Types.ObjectId,
             ref: "Product",
-            required: true,
         },
         quantity: {
             type: Number,
@@ -42,7 +41,6 @@ const orderSchema = new Schema({
     paymentId: {
         type: Schema.Types.ObjectId,
         ref: "Payment",
-        required:true,
     },
     status: {
         type: String,
@@ -65,6 +63,6 @@ const orderSchema = new Schema({
         timestamps: true
     })
 
-const Order = model("Order", orderSchemaSchema);
+const Order = model("Order", orderSchema);
 
 export default Order;
