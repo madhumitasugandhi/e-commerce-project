@@ -8,6 +8,7 @@ const postOrders = async (req, res) => {
         paymentMode
     } = req.body;
 
+    // Basic validation
     if (!products || !deliveryAddress || !phone || !paymentMode) {
         return res.status(400).json({
             success: false,
@@ -15,19 +16,28 @@ const postOrders = async (req, res) => {
         });
     }
 
-    let totalBill = 0;
+    // Calculate total bill
+    let totalBills = 0;
     products.forEach(product => {
-        totalBill += product.price * product.quantity;
+        totalBills += product.price * product.quantity;
     });
 
     try {
+        // Ensure req.user is available from auth middleware
+        if (!req.user || !req.user._id) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized: user not found in request",
+            });
+        }
+
         const newOrder = new Order({
             userId: req.user._id,
             products,
             deliveryAddress,
             phone,
             paymentMode,
-            totalBill 
+            totalBills,  // Use plural if your schema expects it
         });
 
         const savedOrder = await newOrder.save();
@@ -45,4 +55,71 @@ const postOrders = async (req, res) => {
     }
 };
 
-export { postOrders };
+const putOrders = async (req, res) => {
+    console.log(req.user);
+    console.log(user);
+    const { id } = req.params;
+
+    let order;
+
+    try {
+        order = await Order.findById(id);
+
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: "Order not found",
+            });
+        }
+    }
+    catch (error) {
+        return req.status(400).json({ success: false, message: error.message });
+    }
+
+    if (user.role == "user" && order.userId != user._id) {
+        return res.status(400).json({
+            success: false,
+            message: error.message
+        });
+    }
+
+    if (user.role == "user") {
+        return res.status(401).json({
+            success: false,
+            message: "You are not auhthorized to update status",
+        });
+    }
+
+    if (user.role == "user") {
+
+        if (order.status == "delivered") {
+            return res.status(400).json({
+                success: false,
+                message: "Order has already been delivered",
+            });
+        }
+        if (req.body.status == "cancelled") {
+            order.status = "cancelled";
+        }
+    }
+    if (req.body.phone == "returned") {
+        order.phone = req.body.phone;
+    }
+
+    if (user.role == "admin") {
+        order.status = req.body.status;
+        order.timeline = req.body.timeline;
+
+    }
+
+    await order.save();
+
+    const updatedorder = await Order.findById(id);
+
+    return res.json({
+        success: true,
+        message: "Order updated successfully",
+    });
+};
+
+export { postOrders, putOrders };

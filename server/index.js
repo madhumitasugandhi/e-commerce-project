@@ -3,11 +3,11 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 dotenv.config();
-import {jwtVerifyMiddlewar, checkRoleMiddlewar} from './middlewares/auth.js'
+import { jwtVerifyMiddlewar, checkRoleMiddlewar } from './middlewares/auth.js'
 
 import { postSignup, postLogin } from './controllers/user.js';
 import { postProducts, getProducts } from './controllers/product.js';
-import {postOrders} from './controllers/order.js'
+import { postOrders, putOrders } from './controllers/order.js'
 
 const app = express();
 app.use(express.json());
@@ -35,13 +35,13 @@ app.get("/health", (req, res) => {
 //Auth
 app.post("/signup", postSignup);
 app.post("/login", postLogin);
- 
+
 //Product
 app.post("/products", jwtVerifyMiddlewar, checkRoleMiddlewar("admin"), postProducts);
 app.get("/products", getProducts)
 
 app.post("/orders", jwtVerifyMiddlewar, postOrders);
-
+app.put("/orders/:id", jwtVerifyMiddlewar, putOrders)
 
 //page not found API
 app.use((req, res) => {

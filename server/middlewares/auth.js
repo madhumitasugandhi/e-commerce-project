@@ -1,33 +1,40 @@
+import User from '../models/User.js';
 import jwt from "jsonwebtoken";
-import pkg from "jsonwebtoken";
-const { verify } = pkg;
 
-//authentication
-const jwtVerifyMiddlewar = async(req, res, next)=> {
+// Authentication Middleware
+const jwtVerifyMiddlewar = async (req, res, next) => {
     const jwtToken = req.headers?.authorization?.split(" ")[1];
 
-    if (!jwtToken){
+    if (!jwtToken) {
         return res.status(401).json({
             success: false,
-            messange: "Token is missing",
+            message: "Token is missing", 
         });
     }
 
-    try{
-       const decoded = await jwt.verify(jwtToken,process.env.JWT_SECRET);
-       req.user = decoded;
-       next();
+    try {
+        const decoded = jwt.verify(jwtToken, process.env.JWT_SECRET);
+
        
-    }
-    catch(error){
+        const user = await User.findById(decoded.id).select("-password");
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized: user not found",
+            });
+        }
+
+        req.user = user; //  Attach full user object
+        next();
+    } catch (error) {
         return res.status(401).json({
             success: false,
             message: "Invalid JWT token",
         });
     }
-}
+};
 
-//authorization
+// Authorization Middleware
 const checkRoleMiddlewar = (requiredRole) => {
     return (req, res, next) => {
         const userRole = req?.user?.role;
@@ -49,9 +56,7 @@ const checkRoleMiddlewar = (requiredRole) => {
     };
 };
 
-
-
 export {
     jwtVerifyMiddlewar,
     checkRoleMiddlewar
-}
+};
