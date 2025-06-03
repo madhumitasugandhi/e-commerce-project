@@ -3,9 +3,10 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 dotenv.config();
-import {jwtVerifyMiddlewar} from './middlewares/auth.js'
+import {jwtVerifyMiddlewar, checkRoleMiddlewar} from './middlewares/auth.js'
 
 import { postSignup, postLogin } from './controllers/user.js';
+import { postProducts } from './controllers/product.js';
 
 const app = express();
 app.use(express.json());
@@ -29,9 +30,13 @@ app.get("/health", (req, res) => {
 })
 
 //API for E-commerce application
+
+//Auth
 app.post("/signup", postSignup);
 app.post("/login", postLogin);
  
+//Product
+app.post("/products", jwtVerifyMiddlewar, checkRoleMiddlewar("admin"), postProducts);
 
 
 //page not found API
