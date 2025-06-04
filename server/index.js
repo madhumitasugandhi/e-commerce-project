@@ -7,7 +7,7 @@ import { jwtVerifyMiddleware, checkRoleMiddleware } from './middlewares/auth.js'
 
 import { postSignup, postLogin } from './controllers/user.js';
 import { postProducts, getProducts } from './controllers/product.js';
-import { postOrders, putOrders } from './controllers/order.js'
+import { postOrders, putOrders, getOrderById} from './controllers/order.js'
 import { postPayments} from './controllers/payment.js'
 
 const app = express();
@@ -43,7 +43,8 @@ app.get("/products", getProducts)
 
 //Orders
 app.post("/orders", jwtVerifyMiddleware, postOrders);
-app.put("/orders/:id", jwtVerifyMiddleware, putOrders)
+app.put("/orders/:id", jwtVerifyMiddleware, putOrders);
+app.get("/order/:id", jwtVerifyMiddleware, getOrderById);
 
 //Payment
 app.post("/payments", postPayments)
