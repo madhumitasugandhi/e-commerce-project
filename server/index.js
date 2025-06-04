@@ -7,8 +7,10 @@ import { jwtVerifyMiddleware, checkRoleMiddleware } from './middlewares/auth.js'
 
 import { postSignup, postLogin } from './controllers/user.js';
 import { postProducts, getProducts } from './controllers/product.js';
-import { postOrders, putOrders, getOrderById} from './controllers/order.js'
+import { postOrders, putOrders, getOrderById, getOrdersByUserId} from './controllers/order.js'
 import { postPayments} from './controllers/payment.js'
+
+import { responder } from './utils/utils.js';
 
 const app = express();
 app.use(express.json());
@@ -25,11 +27,8 @@ const connectDB = async () => {
 
 // Basic API
 app.get("/health", (req, res) => {
-    res.status(200).json({
-        success: true,
-        message: "Server is running",
-    })
-})
+    return responder(res, true, "Server is running");
+});
 
 //API for E-commerce application
 
@@ -45,13 +44,14 @@ app.get("/products", getProducts)
 app.post("/orders", jwtVerifyMiddleware, postOrders);
 app.put("/orders/:id", jwtVerifyMiddleware, putOrders);
 app.get("/order/:id", jwtVerifyMiddleware, getOrderById);
+app.get("/orders/user/:id", jwtVerifyMiddleware, getOrdersByUserId)
 
 //Payment
 app.post("/payments", postPayments)
 
 //page not found API
 app.use((req, res) => {
-    res.status(404).json({ message: 'API endpoint not found' });
+    return responder(res, false,'API endpoint not found', null, 404);
 });
 
 const PORT = process.env.PORT || 5000;

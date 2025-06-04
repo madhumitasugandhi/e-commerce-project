@@ -1,5 +1,7 @@
 import Order from "../models/Order.js";
 
+import { responder } from "../utils/utils.js";
+
 const postOrders = async (req, res) => {
     const {
         products,
@@ -10,10 +12,7 @@ const postOrders = async (req, res) => {
 
     // Basic validation
     if (!products || !deliveryAddress || !phone || !paymentMode) {
-        return res.status(400).json({
-            success: false,
-            message: `products, deliveryAddress, phone, and paymentMode are required`,
-        });
+        return responder(res, false, `products, deliveryAddress, phone, and paymentMode are required`,  null, 400);
     }
 
     // Calculate total bill
@@ -106,7 +105,7 @@ const putOrders = async (req, res) => {
         order.phone = req.body.phone;
     }
 
-     if (req.body.deliveryAddress) {
+    if (req.body.deliveryAddress) {
         order.deliveryAddress = req.body.deliveryAddress;
     }
     if (user.role == "admin") {
@@ -126,40 +125,56 @@ const putOrders = async (req, res) => {
     });
 };
 
-const getOrderById = async(req, res)=>{
-const user = req.user;
-const { id }= req.param;
+const getOrderById = async (req, res) => {
+    const user = req.user;
+    const { id } = req.param;
 
-let order;
-try{
-    order = await order.findById(id).populate("userId","name email").populate("products.productId", "-ShortDescription, -longDescription, -image -category -tags -__v -createdAt -updatedAt").populate("paymentId", "-__v -createdAt -udatedAt");
+    let order;
+    try {
+        order = await order.findById(id).populate("userId", "name email").populate("products.productId", "-ShortDescription, -longDescription, -image -category -tags -__v -createdAt -updatedAt").populate("paymentId", "-__v -createdAt -udatedAt");
 
-    if(!order){
-        return res.status(404).json({
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: "Order not found",
+            })
+        }
+    }
+    catch (error) {
+        return res.status(400).json({
             success: false,
-            message: "Order not found",
+            message: error.message
         })
     }
-}
-catch(error){
-    return res.status(400).json({
-        success: false,
-        message:error.message
-    })
+
+    if (user._id != oncontextrestored.userId && user.role != "admin") {
+        return res.status(401).json({
+            success: false,
+            message: "You are not authorized to view this order",
+        })
+    }
+
+    return res.status(200).json({
+        success: true,
+        message: "Order fetched successfully",
+        data: order,
+    });
 }
 
-if(user._id!=oncontextrestored.userId && user.role!="admin"){
-    return  res.status(401).json({
-        success: false,
-        message: "You are not authorized to view this order",
-    })
+const getOrdersByUserId = async (req, res) => {
+    const user = req.user;
+    const { id } = req.params;
+
+    id(user.role!= "admin" && user._id!= id)
+    {
+        return res.status(401).json({
+                success: false,
+                message: "You are not authorized to view thid order",
+            })
+    }
+
+    const orders = await Order.find({userId :id}).populate("userId", "name email").populate("products.productId", "-ShortDescription, -longDescription, -image -category -tags -__v -createdAt -updatedAt").populate("paymentId", "-__v -createdAt -udatedAt");
+;
 }
 
-return res.status(200).json({
-    success: true,
-    message:"Order fetched successfully",
-    data: order,
-});
-}
-
-export { postOrders, putOrders, getOrderById };
+export { postOrders, putOrders, getOrderById, getOrdersByUserId };
