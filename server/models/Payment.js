@@ -17,11 +17,23 @@ const PaymentSchema = new Schema({
         type: String,
         default: "pending",
     },
+    timeline:[
+        {
+            status: {
+                type: String,
+                required: true,
+            },
+            date: {
+                type: Date,
+                default: Date.now,
+            }
+        }
+    ]
 },
     {
         timestamps: true,
     });
 
-const Payment = model('Payment', userSchema);
+const Payment = model('Payment', PaymentSchema);
 
 export default Payment;

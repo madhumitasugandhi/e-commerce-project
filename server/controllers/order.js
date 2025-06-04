@@ -102,10 +102,13 @@ const putOrders = async (req, res) => {
             order.status = "cancelled";
         }
     }
-    if (req.body.phone == "returned") {
+    if (req.body.phone) {
         order.phone = req.body.phone;
     }
 
+     if (req.body.deliveryAddress) {
+        order.deliveryAddress = req.body.deliveryAddress;
+    }
     if (user.role == "admin") {
         order.status = req.body.status;
         order.timeline = req.body.timeline;
@@ -119,6 +122,7 @@ const putOrders = async (req, res) => {
     return res.json({
         success: true,
         message: "Order updated successfully",
+        data: updatedorder,
     });
 };
 

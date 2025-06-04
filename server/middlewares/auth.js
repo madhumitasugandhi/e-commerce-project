@@ -2,7 +2,7 @@ import User from '../models/User.js';
 import jwt from "jsonwebtoken";
 
 // Authentication Middleware
-const jwtVerifyMiddlewar = async (req, res, next) => {
+const jwtVerifyMiddleware = async (req, res, next) => {
     const jwtToken = req.headers?.authorization?.split(" ")[1];
 
     if (!jwtToken) {
@@ -35,7 +35,7 @@ const jwtVerifyMiddlewar = async (req, res, next) => {
 };
 
 // Authorization Middleware
-const checkRoleMiddlewar = (requiredRole) => {
+const checkRoleMiddleware = (requiredRole) => {
     return (req, res, next) => {
         const userRole = req?.user?.role;
         const method = req.method;
@@ -57,6 +57,6 @@ const checkRoleMiddlewar = (requiredRole) => {
 };
 
 export {
-    jwtVerifyMiddlewar,
-    checkRoleMiddlewar
+    jwtVerifyMiddleware,
+    checkRoleMiddleware
 };

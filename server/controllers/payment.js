@@ -26,10 +26,11 @@ const postPayments = async (req, res) => {
         })
     }
 
-    if (order.status == "deliverd" || order.status == "cancelled") {
+    if (
+        ["delivered", "cancelled"].includes(order.status.toLowerCase())) {
         return res.status(400).json({
             success: false,
-            message: "This order has already been delivered or cancelled",
+            message: `This order has already been ${order.status}`,
         });
     }
     const payment = new Payment({
@@ -45,16 +46,22 @@ const postPayments = async (req, res) => {
         order.paymentId = savedPayment._id;
         order.paymentMode = paymentMode;
 
-        order.timeline.push({status: "Payment Completed", date: Date.now()});
+        order.timeline.push({ status: "Payment Completed", date: Date.now() });
 
         await order.save();
+
+        return res.json({
+            success: true,
+            message: "Payment Successful",
+            data: savedPayment,
+        })
     }
-    catch(error){
+    catch (error) {
         return req.status(400).json({
             success: false, message: error.message
         })
     }
-    
+
 }
 
 export { postPayments }

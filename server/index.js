@@ -3,11 +3,12 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 dotenv.config();
-import { jwtVerifyMiddlewar, checkRoleMiddlewar } from './middlewares/auth.js'
+import { jwtVerifyMiddleware, checkRoleMiddleware } from './middlewares/auth.js'
 
 import { postSignup, postLogin } from './controllers/user.js';
 import { postProducts, getProducts } from './controllers/product.js';
 import { postOrders, putOrders } from './controllers/order.js'
+import { postPayments} from './controllers/payment.js'
 
 const app = express();
 app.use(express.json());
@@ -37,11 +38,15 @@ app.post("/signup", postSignup);
 app.post("/login", postLogin);
 
 //Product
-app.post("/products", jwtVerifyMiddlewar, checkRoleMiddlewar("admin"), postProducts);
+app.post("/products", jwtVerifyMiddleware, checkRoleMiddleware("admin"), postProducts);
 app.get("/products", getProducts)
 
-app.post("/orders", jwtVerifyMiddlewar, postOrders);
-app.put("/orders/:id", jwtVerifyMiddlewar, putOrders)
+//Orders
+app.post("/orders", jwtVerifyMiddleware, postOrders);
+app.put("/orders/:id", jwtVerifyMiddleware, putOrders)
+
+//Payment
+app.post("/payments", postPayments)
 
 //page not found API
 app.use((req, res) => {
