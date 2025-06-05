@@ -65,8 +65,7 @@ const putOrders = async (req, res) => {
       401
     );
   }
-
-  // user can only cancel the order if it is not delivered
+    // admin can update any order
   if (user.role == "user") {
     if (order.status == "delivered") {
       return responder(
@@ -146,14 +145,13 @@ const getOrdersByUserId = async (req, res) => {
     return responder(
       res,
       false,
-      "You are not authorized to view this orders",
+      "You are not authorized to view this user's orders",
       null,
       401
     );
   }
 
   const orders = await Order.find({ userId: id })
-    .sort({ createdAt: -1 })
     .populate("userId", "name email")
     .populate(
       "products.productId",

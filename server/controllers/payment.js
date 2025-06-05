@@ -1,67 +1,56 @@
-import Order from "../models/Order.js";
-import Payment from "../models/Payment.js";
+import Order from "./../models/Order.js";
+import Payment from "./../models/Payment.js";
 
 const postPayments = async (req, res) => {
-    const {
-        orderId,
-        amount,
-        paymentMode,
-        status,
-        transcationId,
-    } = req.body;
+  const { orderId, amount, paymentMode, status, transactionId } = req.body;
 
-    let order;
-    try {
-        order = await Order.findById(orderId)
-    }
-    catch (error) {
-        return res.status(400).json({
-            success: false, message: error.message
-        });
-    }
-    if (!order) {
-        return res.status(400).json({
-            success: false,
-            message: "Order dosen't exist",
-        })
-    }
+  let order;
 
-    if (
-        ["delivered", "cancelled"].includes(order.status.toLowerCase())) {
-        return res.status(400).json({
-            success: false,
-            message: `This order has already been ${order.status}`,
-        });
-    }
-    const payment = new Payment({
-        paymentMode,
-        amount,
-        transcationId,
-        status,
+  try {
+    order = await Order.findById(orderId);
+  } catch (error) {
+    return res.status(400).json({ success: false, message: error.message });
+  }
+
+  if (!order) {
+    return res.status(404).json({
+      success: false,
+      message: "This order does not exist",
     });
+  }
 
-    try {
-        const savedPayment = await payment.save();
+  if (["delivered", "cancelled"].includes(order.status.toLowerCase())) {
+    return res.status(400).json({
+      success: false,
+      message: `Order is already ${order.status.toLowerCase()}`,
+    });
+  }
 
-        order.paymentId = savedPayment._id;
-        order.paymentMode = paymentMode;
+  const payment = new Payment({
+    paymentMode,
+    amount,
+    transactionId,
+    status,
+  });
 
-        order.timeline.push({ status: "Payment Completed", date: Date.now() });
+  try {
+    const savedPayment = await payment.save();
 
-        await order.save();
+    order.paymentId = savedPayment._id;
+    order.paymentMode = paymentMode;
 
-        return res.json({
-            success: true,
-            message: "Payment Successful",
-            data: savedPayment,
-        })
-    }
-    catch (error) {
-        return req.status(400).json({
-            success: false, message: error.message
-        })
-    }
+    order.timeline.push({ status: "Payment Completed", date: Date.now() });
 
-}
+    await order.save();
 
-export { postPayments }
+    return res.json({
+      success: true,
+      message: "Payment successful",
+      data: savedPayment,
+    });
+  } catch (error) {
+    return res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+export { postPayments };
