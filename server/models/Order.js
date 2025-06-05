@@ -24,7 +24,6 @@ const orderSchema = new Schema({
     ],
     totalBills: {
         type: Number,
-        required: true,
     },
     deliveryAddress: {
         type: String,
