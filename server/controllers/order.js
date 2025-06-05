@@ -1,180 +1,167 @@
 import Order from "../models/Order.js";
 
-import { responder } from "../utils/utils.js";
+import { responder } from "./../utils/utils.js";
 
 const postOrders = async (req, res) => {
-    const {
-        products,
-        deliveryAddress,
-        phone,
-        paymentMode
-    } = req.body;
+  const { products, deliveryAddress, phone, paymentMode } = req.body;
 
-    // Basic validation
-    if (!products || !deliveryAddress || !phone || !paymentMode) {
-        return responder(res, false, `products, deliveryAddress, phone, and paymentMode are required`,  null, 400);
-    }
+  if (!products || !deliveryAddress || !phone || !paymentMode) {
+    return responder(
+      res,
+      false,
+      `products, totalBill, deliveryAddress, phone, paymentMode are required`,
+      null,
+      400
+    );
+  }
 
-    // Calculate total bill
-    let totalBills = 0;
-    products.forEach(product => {
-        totalBills += product.price * product.quantity;
+  let totalBill = 0;
+
+  products.forEach((product) => {
+    totalBill += product.price * product.quantity;
+  });
+
+  try {
+    const newOrder = new Order({
+      userId: req.user._id,
+      products,
+      totalBill,
+      deliveryAddress,
+      phone,
+      paymentMode,
     });
 
-    try {
-        // Ensure req.user is available from auth middleware
-        if (!req.user || !req.user._id) {
-            return res.status(401).json({
-                success: false,
-                message: "Unauthorized: user not found in request",
-            });
-        }
+    const savedOrder = await newOrder.save();
 
-        const newOrder = new Order({
-            userId: req.user._id,
-            products,
-            deliveryAddress,
-            phone,
-            paymentMode,
-            totalBills,  // Use plural if your schema expects it
-        });
-
-        const savedOrder = await newOrder.save();
-
-        return res.status(200).json({
-            success: true,
-            message: "Order placed successfully.",
-            data: savedOrder
-        });
-    } catch (error) {
-        return res.status(400).json({
-            success: false,
-            message: error.message
-        });
-    }
+    return responder(res, true, "Order placed successfully", savedOrder, 201);
+  } catch (error) {
+    return responder(res, false, error.message, null, 400);
+  }
 };
 
 const putOrders = async (req, res) => {
-    console.log(req.user);
-    console.log(user);
-    const { id } = req.params;
+  const user = req.user;
+  const { id } = req.params;
 
-    let order;
+  let order;
 
-    try {
-        order = await Order.findById(id);
+  try {
+    order = await Order.findById(id);
 
-        if (!order) {
-            return res.status(404).json({
-                success: false,
-                message: "Order not found",
-            });
-        }
+    if (!order) {
+      return responder(res, false, "Order not found", null, 404);
     }
-    catch (error) {
-        return req.status(400).json({ success: false, message: error.message });
-    }
+  } catch (error) {
+    return responder(res, false, error.message, null, 400);
+  }
 
-    if (user.role == "user" && order.userId != user._id) {
-        return res.status(400).json({
-            success: false,
-            message: error.message
-        });
-    }
+  // user can only update his own order
+  if (user.role == "user" && order.userId != user._id) {
+    return responder(
+      res,
+      false,
+      "You are not authorized to update this order",
+      null,
+      401
+    );
+  }
 
-    if (user.role == "user") {
-        return res.status(401).json({
-            success: false,
-            message: "You are not auhthorized to update status",
-        });
-    }
-
-    if (user.role == "user") {
-
-        if (order.status == "delivered") {
-            return res.status(400).json({
-                success: false,
-                message: "Order has already been delivered",
-            });
-        }
-        if (req.body.status == "cancelled") {
-            order.status = "cancelled";
-        }
-    }
-    if (req.body.phone) {
-        order.phone = req.body.phone;
+  // user can only cancel the order if it is not delivered
+  if (user.role == "user") {
+    if (order.status == "delivered") {
+      return responder(
+        res,
+        false,
+        "Order has already been delivered",
+        null,
+        400
+      );
     }
 
-    if (req.body.deliveryAddress) {
-        order.deliveryAddress = req.body.deliveryAddress;
+    if (req.body.status == "cancelled") {
+      order.status = "cancelled";
     }
-    if (user.role == "admin") {
-        order.status = req.body.status;
-        order.timeline = req.body.timeline;
+  }
 
-    }
+  if (req.body.phone) {
+    order.phone = req.body.phone;
+  }
 
-    await order.save();
+  if (req.body.deliveryAddress) {
+    order.deliveryAddress = req.body.deliveryAddress;
+  }
 
-    const updatedorder = await Order.findById(id);
+  if (user.role == "admin") {
+    order.status = req.body.status;
+    order.timeline = req.body.timeline;
+  }
 
-    return res.json({
-        success: true,
-        message: "Order updated successfully",
-        data: updatedorder,
-    });
+  await order.save();
+
+  const updatedOrder = await Order.findById(id);
+
+  return responder(res, true, "Order updated successfully", updatedOrder, 200);
 };
 
 const getOrderById = async (req, res) => {
-    const user = req.user;
-    const { id } = req.param;
+  const user = req.user;
+  const { id } = req.params;
 
-    let order;
-    try {
-        order = await order.findById(id).populate("userId", "name email").populate("products.productId", "-ShortDescription, -longDescription, -image -category -tags -__v -createdAt -updatedAt").populate("paymentId", "-__v -createdAt -udatedAt");
+  let order;
 
-        if (!order) {
-            return res.status(404).json({
-                success: false,
-                message: "Order not found",
-            })
-        }
+  try {
+    order = await Order.findById(id)
+      .populate("userId", "name email")
+      .populate(
+        "products.productId",
+        "-shortDescription -longDescription -image -category -tags -__v -createdAt -updatedAt"
+      )
+      .populate("paymentId", "-__v -createdAt -updatedAt");
+
+    if (!order) {
+      return responder(res, false, "Order not found", null, 404);
     }
-    catch (error) {
-        return res.status(400).json({
-            success: false,
-            message: error.message
-        })
-    }
+  } catch (error) {
+    return responder(res, false, error.message, null, 400);
+  }
 
-    if (user._id != oncontextrestored.userId && user.role != "admin") {
-        return res.status(401).json({
-            success: false,
-            message: "You are not authorized to view this order",
-        })
-    }
+  if (user._id != order.userId && user.role != "admin") {
+    return responder(
+      res,
+      false,
+      "You are not authorized to view this order",
+      null,
+      401
+    );
+  }
 
-    return res.status(200).json({
-        success: true,
-        message: "Order fetched successfully",
-        data: order,
-    });
-}
+  return responder(res, true, "Order fetched successfully", order, 200);
+};
 
 const getOrdersByUserId = async (req, res) => {
-    const user = req.user;
-    const { id } = req.params;
+  const { id } = req.params;
+  const user = req.user;
 
-    id(user.role!= "admin" && user._id!= id)
-    {
-        return res.status(401).json({
-                success: false,
-                message: "You are not authorized to view thid order",
-            })
-    }
+  if (user.role != "admin" && user._id != id) {
+    return responder(
+      res,
+      false,
+      "You are not authorized to view this orders",
+      null,
+      401
+    );
+  }
 
-    const orders = await Order.find({userId :id}).populate("userId", "name email").populate("products.productId", "-ShortDescription, -longDescription, -image -category -tags -__v -createdAt -updatedAt").populate("paymentId", "-__v -createdAt -udatedAt");
-;
-}
+  const orders = await Order.find({ userId: id })
+    .sort({ createdAt: -1 })
+    .populate("userId", "name email")
+    .populate(
+      "products.productId",
+      "-shortDescription -longDescription -image -category -tags -__v -createdAt -updatedAt"
+    )
+    .populate("paymentId", "-__v -createdAt -updatedAt");
 
-export { postOrders, putOrders, getOrderById, getOrdersByUserId };
+  return responder(res, true, "Orders fetched successfully", orders, 200);
+};
+
+export { getOrderById, getOrdersByUserId, postOrders, putOrders };
