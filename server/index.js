@@ -17,6 +17,7 @@ import { postOrders, putOrders, getOrderById, getOrdersByUserId} from './control
 //Payment Controllers
 import { postPayments} from './controllers/payment.js'
 
+// Utils -- responder function work as black box to send response
 import { responder } from './utils/utils.js';
 
 const app = express();
