@@ -1,4 +1,4 @@
-import User from '../models/User.js';
+
 import jwt from "jsonwebtoken";
 
 // Authentication Middleware
@@ -14,17 +14,7 @@ const jwtVerifyMiddleware = async (req, res, next) => {
 
     try {
         const decoded = jwt.verify(jwtToken, process.env.JWT_SECRET);
-
-       
-        const user = await User.findById(decoded.id).select("-password");
-        if (!user) {
-            return res.status(401).json({
-                success: false,
-                message: "Unauthorized: user not found",
-            });
-        }
-
-        req.user = user; //  Attach full user object
+        req.user = decoded; 
         next();
     } catch (error) {
         return res.status(401).json({
@@ -35,25 +25,19 @@ const jwtVerifyMiddleware = async (req, res, next) => {
 };
 
 // Authorization Middleware
-const checkRoleMiddleware = (requiredRole) => {
-    return (req, res, next) => {
-        const userRole = req?.user?.role;
-        const method = req.method;
-        const path = req.path;
+const checkRoleMiddleware = async(req, res, next)=> {
+    const userRole = req?.user?.role;
+    const method = req.method;
+    const path = req.path;
+    
+    if(method === "POST" && path ==="/products" && userRole !== "admin") {
+        return res.status(403).json({
+            success: false,
+            message: "You are not authorized to perform this action",
+        });
+    }
 
-        console.log("User Role:", userRole);
-        console.log("Method:", method);
-        console.log("Path:", path);
-
-        if (userRole !== requiredRole) {
-            return res.status(403).json({
-                success: false,
-                message: "Access denied. Insufficient permissions.",
-            });
-        }
-
-        next();
-    };
+    next();
 };
 
 export {
