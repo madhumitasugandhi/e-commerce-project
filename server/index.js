@@ -5,9 +5,16 @@ import dotenv from 'dotenv';
 dotenv.config();
 import { jwtVerifyMiddleware, checkRoleMiddleware } from './middlewares/auth.js'
 
+//User Controllers
 import { postSignup, postLogin } from './controllers/user.js';
+
+//Product Controllers
 import { postProducts, getProducts } from './controllers/product.js';
+
+//Order Controllers
 import { postOrders, putOrders, getOrderById, getOrdersByUserId} from './controllers/order.js'
+
+//Payment Controllers
 import { postPayments} from './controllers/payment.js'
 
 import { responder } from './utils/utils.js';
@@ -37,13 +44,13 @@ app.post("/signup", postSignup);
 app.post("/login", postLogin);
 
 //Product
-app.post("/products", jwtVerifyMiddleware, checkRoleMiddleware("admin"), postProducts);
+app.post("/products", jwtVerifyMiddleware, checkRoleMiddleware, postProducts);
 app.get("/products", getProducts)
 
 //Orders
 app.post("/orders", jwtVerifyMiddleware, postOrders);
 app.put("/orders/:id", jwtVerifyMiddleware, putOrders);
-app.get("/order/:id", jwtVerifyMiddleware, getOrderById);
+app.get("/api/orders/:id", jwtVerifyMiddleware, getOrderById);
 app.get("/orders/user/:id", jwtVerifyMiddleware, getOrdersByUserId)
 
 //Payment
