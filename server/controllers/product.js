@@ -10,18 +10,19 @@ const postProducts = async (req, res) => {
         category,
         images,
         tags
-    } = req.body
+    } = req.body;
 
-    const mandatoryFields = ["name", "shortDescription", "longDescription", "price", "category", "images"];
+
+    const mandatoryFields = ["name", "shortDescription", "longDescription", "price", "category","images"];
 
     for (const field of mandatoryFields) {
         if (!req.body[field]) {
-            return res
-                .status(400)
-                .json({ success: false, message: `${field} is required` });
+            return res.status(400).json({
+                success: false,
+                message: `Field ${field} is required.`
+            });
         }
     }
-
     const newProduct = new Product({
         name,
         shortDescription,
@@ -32,49 +33,36 @@ const postProducts = async (req, res) => {
         images,
         tags
     });
+
     try {
         const savedProduct = await newProduct.save();
-
-        return res.json({
+        return res.status(201).json({
             success: true,
-            message: "Product created successfully",
-            data: savedProduct
+            data: savedProduct,
+            message: "Product created successfully."
         });
-    }
-    catch (e) {
+    } catch (error) {
         return res.status(400).json({
             success: false,
-            message: e.message
-        })
+            message: error.message
+        });
     }
-
 
 };
 
 const getProducts = async(req,res)=>{
 
-    const {limit, search}=req.query;
+    const {limit, search} = req.query;
 
-    const products = await Product.find({
-        name: {
-            $regex : new RegExp(search|| ""),
-            $options: "i"
-        },
-        shortDescription: {
-            $regex : new RegExp(search|| ""),
-            $options: "i"
-        },
-        longDescription: {
-            $regex : new RegExp(search|| ""),
-            $options: "i"
-        },
-    }).limit(parseInt(limit || 10));
+   const product = await Product.find(
 
-    return res.status(200).json({
-        success: true,
-        data: products,
-        message: "Products fetched successfully."
-    });
-}
+   ).limit(parseInt(limit || 10)).select("-__v -createdAt -updatedAt");
+
+   return res.status(200).json({
+       success: true,
+       data: product,
+       message: "Products fetched successfully."
+   });
+};
 
 export { postProducts, getProducts };
