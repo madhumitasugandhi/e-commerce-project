@@ -1,7 +1,7 @@
 import { set } from "mongoose";
 
 const getCurrentUser = () => {
-    const user = localStorage.getItem("e-commerce-user-token-details");
+    const user = localStorage.getItem("e-commerce-user-details");
     if(!user) {
         return null;
     }

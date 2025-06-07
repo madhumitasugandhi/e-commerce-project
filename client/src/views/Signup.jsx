@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 //Signup.jsx component
 import Button from "../components/Button.jsx";
 import Input from "../components/Input.jsx";
+import { getCurrentUser } from "../utils/comman.jsx";
 
 function Signup() {
   const [signupData, setSignupData] = useState({
@@ -51,6 +52,17 @@ const processSignup = async () => {
 
 const [error, setError] = useState("");
 
+useEffect(() => {
+    // Check if user is already logged in
+    // If logged in, redirect to dashboard
+    const currentUsr = getCurrentUser();
+    if(currentUsr) {
+      toast.success(`Welcome back, ${currentUsr.name}`);
+      setTimeout(() => {
+        window.location.href = "/dashboard";
+      },3000);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900 px-4 sm:px-6 lg:px-8 py-8 sm:py-10 relative overflow-hidden">

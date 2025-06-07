@@ -7,6 +7,9 @@ import { Link } from "react-router-dom";
 //Signup.jsx component
 import Button from "../components/Button.jsx";
 import Input from "../components/Input.jsx";
+import { use } from "react";
+import { get } from "mongoose";
+import { getCurrentUser } from "../utils/comman.jsx";
 
 function Login() {
   const [loginData, setLoginData] = useState({
@@ -22,6 +25,8 @@ function Login() {
         loginData
       );
       localStorage.setItem("e-commerce-user-token", response.data.token);
+      localStorage.setItem("e-commerce-user-details",JSON.stringify(response.data.data));
+
       toast.dismiss();
       console.log(response.data);
       toast.success("Login successful!");
@@ -44,6 +49,18 @@ function Login() {
   };
 
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    // Check if user is already logged in
+    // If logged in, redirect to dashboard
+    const currentUsr = getCurrentUser();
+    if(currentUsr) {
+      toast.success(`Welcome back, ${currentUsr.name}`);
+      setTimeout(() => {
+        window.location.href = "/dashboard";
+      },3000);
+    }
+  }, []);
 
 
   return (
