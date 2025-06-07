@@ -8,7 +8,6 @@ import { Link } from "react-router-dom";
 import Button from "../components/Button.jsx";
 import Input from "../components/Input.jsx";
 import { use } from "react";
-import { get } from "mongoose";
 import { getCurrentUser } from "../utils/comman.jsx";
 
 function Login() {

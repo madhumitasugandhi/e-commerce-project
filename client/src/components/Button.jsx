@@ -1,7 +1,7 @@
 import React from 'react'
 
 function Button({label, onClick, variant}) {
-const baseStyles = "w-full py-2.5 sm:py-3 rounded-lg font-extrabold tracking-wide shadow-lg transition text-sm sm:text-base";
+const baseStyles = "w-30 py-2.5 sm:py-3 rounded-lg font-extrabold tracking-wide shadow-lg transition text-sm sm:text-base";
 
 const variants = {
   primary: "bg-amber-600 hover:bg-amber-700 text-white",
