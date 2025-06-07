@@ -2,40 +2,40 @@ import bcrypt from 'bcrypt';
 import User from './../models/User.js';
 import jwt from "jsonwebtoken";
 
-const postSignup = async(req, res)=>{
-    const{name, email, phone, address, password, rePassword} = req.body;
+const postSignup = async (req, res) => {
+    const { name, email, phone, address, password, rePassword } = req.body;
 
-    if(!password){
+    if (!password) {
         return res.status(400).json({
             success: false,
             message: "Password is required"
         });
     }
-    if(password !== rePassword){
+    if (password !== rePassword) {
         return res.status(400).json({
             success: false,
             message: "Password dose not match"
         });
     }
-    if(!name){
+    if (!name) {
         return res.status(400).json({
             success: false,
             message: "Name is required"
         });
     }
-    if(!email){
+    if (!email) {
         return res.status(400).json({
             success: false,
             message: "Email is required"
         });
     }
-    if(!phone){
+    if (!phone) {
         return res.status(400).json({
             success: false,
             message: "Contact number is required"
         });
     }
-    if(!address){
+    if (!address) {
         return res.status(400).json({
             success: false,
             message: "Address is required"
@@ -44,49 +44,51 @@ const postSignup = async(req, res)=>{
 
     const salt = bcrypt.genSaltSync(10);
 
-    try{
-    const newUser = new User({
-        name,
-        email,
-        phone,
-        address,
-        password: bcrypt.hashSync(password, salt),
-    });
+    try {
+        const newUser = new User({
+            name,
+            email,
+            phone,
+            address,
+            password: bcrypt.hashSync(password, salt),
+        });
 
-    const savedUser = await newUser.save();
+        const savedUser = await newUser.save();
 
-    return res.status(200).json({
-        success: true,
-        message: "Signup Successful",
-        data:{
-            name: savedUser.name,
-            email: savedUser.email,
-            phone: savedUser.phone,
-            address: savedUser.address,
-        },
-    });
+        return res.status(200).json({
+            success: true,
+            message: "Signup Successful, please login",
+            data: {
+                name: savedUser.name,
+                email: savedUser.email,
+                phone: savedUser.phone,
+                address: savedUser.address,
+            },
+        });
+    }
+    catch (error) {
+        if (error.message.includes("duplicate key error collection")) {
+            return res.status(400).json({
+                success: false,
+                message: `${Object.keys(error.keyValue)} '${Object.values(error.keyValue)}' already exists`
+            });
+        }
+    };
 }
-catch(error){
-    return res.status(400).json({
-        success: false,
-        message: error.message
-    });
-}
-};
 
-const postLogin =async (req, res)=>{
-    const {email, password} = req.body;
+const postLogin = async (req, res) => {
+    const { email, password } = req.body;
 
-     if(!email || !password){
+    if (!email || !password) {
         return res.status(400).json({
             success: false,
             message: "Email and Password is required"
         });
     }
 
-    const user = await User.findOne({email});
+    const user = await User.findOne({ email });
 
-    if (!user){
+    if (!user) {
         return res.status(404).json({
             success: false,
             message: "Please signup first"
@@ -95,8 +97,8 @@ const postLogin =async (req, res)=>{
 
     const isPasswordMatch = bcrypt.compareSync(password, user.password);
 
-    if(isPasswordMatch){
-        const jwtToken = jwt.sign({email: user.email, role: user.role, _id: user._id}, process.env.JWT_SECRET);
+    if (isPasswordMatch) {
+        const jwtToken = jwt.sign({ email: user.email, role: user.role, _id: user._id }, process.env.JWT_SECRET);
 
         res.setHeader("Authorization", `Bearer ${jwtToken}`);
 
@@ -106,12 +108,12 @@ const postLogin =async (req, res)=>{
             message: "Login successful"
         });
     }
-    else{
+    else {
         return res.status(400).json({
             success: false,
             message: "Invaild credentials"
         });
     }
-} 
+}
 
-export { postSignup, postLogin};
+export { postSignup, postLogin }

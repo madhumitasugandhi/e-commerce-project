@@ -1,5 +1,10 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
+import { Link } from "react-router-dom";
+
+//Signup.jsx component
 import Button from "../components/Button.jsx";
 import Input from "../components/Input.jsx";
 
@@ -12,6 +17,39 @@ function Signup() {
     password: "",
     rePassword: "",
   });
+
+const processSignup = async () => {
+  toast.loading("Please wait, signing up...");
+  try {
+    const response = await axios.post(
+      `${process.env.VITE_API_URL}/Signup`, 
+      signupData
+    );
+    toast.dismiss();
+    console.log("Signup successful:", response.data);
+    toast.success("Signup successful!"); 
+
+    setSignupData({
+      name: "",
+    email: "",
+    phone: "",
+    address: "",
+    password: "",
+    rePassword: "",
+    })
+    setTimeout(() => {
+      window.location.href = "/login"; // Redirect to login page after successful signup
+    }, 4000);
+  } catch (error) {
+    toast.dismiss();
+   setError(error.response.data.message);
+    const errorMessage = error.response?.data?.message || "An error occurred during signup.";
+    toast.error(errorMessage);
+    console.error(error);
+  }
+};
+
+const [error, setError] = useState("");
 
 
   return (
@@ -27,6 +65,7 @@ function Signup() {
               placeholder="Enter your full name"
               value={signupData.name}
               onChange={(value) => {setSignupData({ ...signupData, name: value })
+              setError("");
             }}
             />
 
@@ -36,7 +75,8 @@ function Signup() {
               type="email"
               placeholder="Enter your email address"
               value={signupData.email}
-              onChange={(value) => setSignupData({ ...signupData, email: value })}
+              onChange={(value) => {setSignupData({ ...signupData, email: value })
+              setError("");}}
             />
 
           <Input
@@ -45,7 +85,8 @@ function Signup() {
             type="tel"
             placeholder="Enter your phone number"
             value={signupData.phone}
-            onChange={(value) => setSignupData({ ...signupData, phone: value })}  
+            onChange={(value) => {setSignupData({ ...signupData, phone: value })
+            setError("");}}  
           />
 
           <Input
@@ -53,7 +94,9 @@ function Signup() {
             name="address"
             placeholder="Enter your address"
             value={signupData.address}
-            onChange={(value) => setSignupData({ ...signupData, address: value })}
+            onChange={(value) => {setSignupData({ ...signupData, address: value })
+            setError("");}
+            }
           />
           
           <Input
@@ -62,7 +105,8 @@ function Signup() {
             type="password"
             placeholder="Enter your password"
             value={signupData.password}
-            onChange={(value) => setSignupData({ ...signupData, password: value })} 
+            onChange={(value) => {setSignupData({ ...signupData, password: value })
+            setError("");}} 
           />
           <Input
             label={"Confirm Password"}
@@ -70,19 +114,35 @@ function Signup() {
             type="password"
             placeholder="Re-enter your password"
             value={signupData.rePassword}
-            onChange={(value) => setSignupData({ ...signupData, rePassword: value })}
+            onChange={(value) => {setSignupData({ ...signupData, rePassword: value })
+            setError("");}}
           />
+          <p className="text-red-600">{error}</p>
+          <p>
+            <span className="text-white">Already have an account?{" "}</span>
+            <Link to="/login" className="text-blue-400 hover:underline px-4">
+              Login here
+            </Link>
+          </p>
 
-          <Button
+          <div className="flex justify-around mt-6 gap-8">
+            <Button
+            label="Cancle"
+            variant="tertiary"
+            onClick={() => {
+              window.location.href = "/";
+            }} />
+
+            <Button
             label="Sign Up"
             variant="primary"
-            onClick={(e) => {
-              e.preventDefault();
-              // Handle signup logic here
-              console.log("Signup Data:", signupData);
-            }} />
+            onClick={() => processSignup()} />
+
+            
+          </div>
         </form>
       </div>
+      <Toaster/>
     </div>
   );
 }
