@@ -10,7 +10,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 
 // Importing utility functions and components
-import { getCurrentUser, logout } from '../utils/comman';
+import { getCurrentUser, logout } from '../utils/common';
 import Button from '../components/Button';
 
 const UserDetaileRow = ({ value, icon }) => {

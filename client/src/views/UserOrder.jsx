@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { getCurrentUser, getJwtToken, getReadableTimestamp } from '../utils/comman';
+import { getCurrentUser, getJwtToken, getReadableTimestamp } from '../utils/common';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import OrderCard from '../components/OrderCard';

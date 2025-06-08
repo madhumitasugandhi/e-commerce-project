@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import Button from "../components/Button.jsx";
 import Input from "../components/Input.jsx";
 import { use } from "react";
-import { getCurrentUser } from "../utils/comman.jsx";
+import { getCurrentUser } from '../utils/common';
 
 function Login() {
   const [loginData, setLoginData] = useState({

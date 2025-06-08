@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 //Signup.jsx component
 import Button from "../components/Button.jsx";
 import Input from "../components/Input.jsx";
-import { getCurrentUser } from "../utils/comman.jsx";
+import { getCurrentUser } from '../utils/common';
 
 function Signup() {
   const [signupData, setSignupData] = useState({

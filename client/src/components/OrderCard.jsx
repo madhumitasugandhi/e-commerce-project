@@ -1,5 +1,5 @@
 import React from 'react'
-import { getReadableTimestamp } from '../utils/comman';
+import { getReadableTimestamp } from '../utils/common';
 
 function OrderCard({order, onClick}) {
     if (!order) {
