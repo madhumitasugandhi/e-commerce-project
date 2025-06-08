@@ -1,7 +1,10 @@
 import React from 'react'
 import { getReadableTimestamp } from '../utils/comman';
 
-function OrderCard({order}) {
+function OrderCard({order, onClick}) {
+    if (!order) {
+        return <p>No order details available.</p>;
+    }
 
     const {_id, status, products, createdAt, totalBill, deliveryAddress} = order;
     return (
@@ -18,6 +21,6 @@ function OrderCard({order}) {
         </div>
     )
 }
-}
+
 
 export default OrderCard
