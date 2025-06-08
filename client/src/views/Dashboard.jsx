@@ -54,19 +54,19 @@ function Dashboard() {
 
                 <div className="relative bg-gray-800 max-w-md w-full rounded-xl shadow-2xl border border-gray-700 p-5 sm:p-8 z-10">
                     <div className='flex mb-4 -mt-6 p-1'>
-                    <Link to="/orders" className="flex items-center justify-center text-sm">
+                    <Link to="/user/orders" className="flex items-center justify-center text-sm">
                         <div>
                             <ShoppingCartIcon size={30} className="text-white mx-auto mb-4 inline" />
                             <span className='text-white p-3 '>My Orders</span>
                         </div>
                     </Link>
-                     <Link to="/orders" className="flex items-center justify-center text-sm ">
+                     <Link to="/user/orders" className="flex items-center justify-center text-sm ">
                         <div>
                             <ShoppingCartIcon size={30} className="text-white mx-auto mb-4 inline" />
                             <span className='text-white p-3 '>My Orders</span>
                         </div>
                     </Link>
-                     <Link to="/orders" className="flex items-center justify-center text-sm ">
+                     <Link to="/user/orders" className="flex items-center justify-center text-sm ">
                         <div>
                             <ShoppingCartIcon size={30} className="text-white mx-auto mb-4 inline" />
                             <span className='text-white p-3'>My Orders</span>

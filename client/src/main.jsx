@@ -8,7 +8,8 @@ import Login from "./views/Login";
 import Home from "./views/Home";
 import NotFound from "./views/NotFound";
 import Dashboard from "./views/Dashboard";
-import Order from "./views/Order";
+import Order from "./views/UserOrder";
+import UserOrder from "./views/UserOrder";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -30,8 +31,8 @@ const router = createBrowserRouter([
     element: <Dashboard/>
   },
   {
-    "path": "/orders",
-    element: <Order/>
+    "path": "/user/orders",
+    element: <UserOrder/>
   },
   {
     "path": "*",
