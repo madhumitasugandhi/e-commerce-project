@@ -22,10 +22,12 @@ function Signup() {
 const processSignup = async () => {
   toast.loading("Please wait, signing up...");
   try {
-    const response = await axios.post(
-      `${process.env.VITE_API_URL}/Signup`, 
+    const response = await axios.post(`
+      ${import.meta.env.VITE_API_URL}/signup`, 
       signupData
+    
     );
+    console.log(response)
     toast.dismiss();
     console.log("Signup successful:", response.data);
     toast.success("Signup successful!"); 
