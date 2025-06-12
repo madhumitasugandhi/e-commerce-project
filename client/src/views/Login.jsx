@@ -20,7 +20,7 @@ function Login() {
     toast.loading("Please wait, signing up...");
     try {
       const response = await axios.post(
-        `${process.env.VITE_API_URL}/login`,
+        `${import.meta.env.VITE_API_URL}/login`,
         loginData
       );
       localStorage.setItem("e-commerce-user-token", response.data.token);
@@ -37,7 +37,7 @@ function Login() {
     
       setTimeout(() => {
         window.location.href = "/dashboard"; 
-      }, 4000);
+      }, 2000);
     } catch (error) {
       toast.dismiss();
       setError(error.response.data.message);
