@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { getCurrentUser, getJwtToken, getReadableTimestamp } from '../utils/common';
 import toast from 'react-hot-toast';
 import axios from 'axios';
@@ -6,28 +6,24 @@ import OrderCard from '../components/OrderCard';
 import { SquareX as CancelIcon } from 'lucide-react';
 
 function UserOrder() {
-
   const [user, setUser] = useState({});
   const [orders, setOrders] = useState([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState({});
 
-  const loadUSerOrders = async () => {
+  const loadUserOrders = async () => {
     if (!user._id) {
-      toast.error("User not found, please login again.");
+      toast.error('User not found, please login again.');
       return;
     }
     try {
-      const response = await axios.get(`${process.env.VITE_API_URL}/orders/users/${user._id}`, {
-        headers: {
-          Authorization: getJwtToken()
-        }
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/orders/user/${user._id}`, {
+        headers: { Authorization: getJwtToken() },
       });
-      console.log(response.data.data);
       setOrders(response.data.data);
-
-    }
-    catch (error) {
-      console.error("Error fetching user orders:", error);
-      toast.error("Failed to load orders. Please try again later.");
+    } catch (error) {
+      console.error('Error fetching user orders:', error);
+      toast.error('Failed to load orders. Please try again later.');
     }
   };
 
@@ -35,109 +31,142 @@ function UserOrder() {
     const user = getCurrentUser();
     if (user) {
       setUser(user);
-    }
-    /*else {
-      toast.error("User not found, please login again.");
+    } else {
+      toast.error('User not found, please login again.');
       setTimeout(() => {
-        window.location.href = "/login";
+        window.location.href = '/login';
       }, 2000);
-    }*/
+    }
   }, []);
 
   useEffect(() => {
-    if (user) {
-      loadUSerOrders();
-    } else {
-      toast.error("Please log in to view your orders.");
-    }
+    if (user?._id) loadUserOrders();
   }, [user]);
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState({});
-
   const OrderViewDialog = ({ isOpen, onClose }) => {
-    if (!isOpen) return null;
+  if (!isOpen) return null;
 
-    const {
-      _id,
-      products,
-      totalBill,
-      deliveryAddress,
-      phone,
-      paymentMode,
-      status,
-      createdAt,
-    } = selectedOrder;
-
-    return (
-      <div
-        className="min-h-screen bg-gray-400 fixed top-0 left-0 w-full bg-opacity-75 z-50 flex justify-center items-center"
-        onClick={onClose}
-      >
-        <div
-          className="bg-white w-1/2 min-h-96 rounded-lg px-10 py-5 relative"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <button
-            className="text-red-500 absolute top-2 right-4"
-            onClick={onClose}
-          >
-            <CancelIcon size={24} />
-          </button>
-
-          <h1 className="text-2xl font-bold mb-10">Order Details</h1>
-
-          <p>Order ID: {_id}</p>
-          <p>Ordered On: {getReadableTimestamp(createdAt)}</p>
-          <p>Payment Mode: {paymentMode}</p>
-          <p>Delivery Address: {deliveryAddress}</p>
-          <p>Phone: {phone}</p>
-          <p>Status: {status}</p>
-
-          {products.map((product) => {
-            const { productId, quantity, price } = product;
-            const { name, images } = productId;
-
-            return (
-              <div className="flex items-center space-x-4 mb-4 shadow-md border border-gray-200 rounded-md">
-                <img src={images[0]} alt={name} className="w-20 h-20" />
-                <div>
-                  <p>{name}</p>
-                  <p>
-                    ₹{price} x {quantity}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-
-          <p className="text-lg font-bold mt-3 border-t-2 pt-4">
-            Bill Amount: ₹{totalBill}
-          </p>
-        </div>
-      </div>
-    );
-  };
+  const {
+    _id,
+    products = [],
+    totalBill = 0,
+    deliveryAddress,
+    phone,
+    paymentMode,
+    status,
+    createdAt,
+  } = selectedOrder;
 
   return (
-    <div>
-      <h1>My Orders</h1>
-      <p>
-        Welcome, {user.name ? user.name : "Guest"}! Here you can view your orders.
-        {user.email ? ` Your email is ${user.email}` : " Please log in to see your orders."}
-      </p>
-      <div>{
-        orders.map((order) => {
-          return <OrderCard
-            key={order._id}
-            order={order}
-            onClick={() => {
-              setSelectedOrder(order);
-              setIsDialogOpen(true);
-            }
-            }
-          />
-        })}
+    <div
+      className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center px-4 py-6"
+      onClick={onClose}
+    >
+      <div
+        className="bg-gray-900 text-white w-full max-w-2xl rounded-2xl shadow-2xl border border-gray-700 p-6 sm:p-8 relative overflow-y-auto max-h-[90vh]"
+        onClick={(e) => e.stopPropagation()}
+      >
+       
+        <button
+          className="absolute top-4 right-4 text-red-400 hover:text-red-300 transition"
+          onClick={onClose}
+        >
+          <CancelIcon size={22} />
+        </button>
+
+        <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-center">
+          Order Details
+        </h2>
+
+      
+        <div className="space-y-2 text-sm text-gray-300 mb-6">
+          <p><span className="text-gray-400">Order ID:</span> {_id}</p>
+          <p><span className="text-gray-400">Ordered On:</span> {getReadableTimestamp(createdAt)}</p>
+          <p><span className="text-gray-400">Payment Mode:</span> {paymentMode}</p>
+          <p><span className="text-gray-400">Delivery Address:</span> {deliveryAddress}</p>
+          <p><span className="text-gray-400">Phone:</span> {phone}</p>
+          <p><span className="text-gray-400">Status:</span> {status}</p>
+        </div>
+
+       
+        <h3 className="text-xl font-semibold mb-4 border-b border-gray-700 pb-2">Products</h3>
+
+        {products.length === 0 ? (
+          <p className="text-gray-400">No products found.</p>
+        ) : (
+          <div className="space-y-4">
+            {products.map((product, i) => {
+              const { productId, quantity, price } = product;
+              const name = productId?.name || "Unnamed Product";
+              const images = productId?.images || [];
+
+              return (
+                <div
+                  key={i}
+                  className="flex items-center space-x-4 p-3 rounded-lg bg-gray-800 shadow-md"
+                >
+                  <img
+                    src={images?.[0] || "https://via.placeholder.com/100"}
+                    alt={name}
+                    className="w-16 h-16 object-cover rounded-md border border-gray-600"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "https://via.placeholder.com/100";
+                    }}
+                  />
+                  <div>
+                    <p className="font-medium text-white">{name}</p>
+                    <p className="text-gray-400 text-sm">
+                      ₹{price} × {quantity}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Total */}
+        <p className="text-xl font-bold text-right mt-6 border-t border-gray-700 pt-4">
+          Total: ₹{totalBill}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+
+  return (
+    <div className="min-h-screen bg-gray-900 px-4 sm:px-6 lg:px-8 py-10 text-white">
+      <div className="max-w-5xl mx-auto">
+        <h1 className="text-3xl font-bold mb-4 text-center">My Orders</h1>
+        <p className="text-center text-gray-400 mb-8">
+          Welcome, <span className="text-white">{user.name || 'Guest'}</span>!
+          {user.email ? (
+            <> Your email is <span className="text-white">{user.email}</span></>
+          ) : (
+            <> Please log in to see your orders.</>
+          )}
+        </p>
+
+        {orders.length === 0 ? (
+          <div className="text-center text-gray-500 mt-20">
+            <p>No orders found.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {orders.map((order) => (
+              <OrderCard
+                key={order._id}
+                order={order}
+                onClick={() => {
+                  setSelectedOrder(order);
+                  setIsDialogOpen(true);
+                }}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       <OrderViewDialog
@@ -148,7 +177,7 @@ function UserOrder() {
         }}
       />
     </div>
-  )
+  );
 }
 
 export default UserOrder;
