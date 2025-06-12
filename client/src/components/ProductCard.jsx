@@ -15,12 +15,14 @@ function ProductCard({
   price,
   currentPrice,
   shortDescription,
-  longDescription,
   images,
   tags,
   category,
 }) {
-  const [currentImage, setCurrentImage] = useState(images[0]);
+  const defaultImage = "https://via.placeholder.com/300x300?text=Product+Image";
+  const [currentImage, setCurrentImage] = useState(
+    Array.isArray(images) && images.length > 0 ? images[0] : defaultImage
+  );
   const [quantity, setQuantity] = useState(1);
 
   const leftArrowClick = () => {
@@ -37,90 +39,87 @@ function ProductCard({
 
   const handleAddToCart = () => {
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-
     const product = {
       productId: _id,
-      name: name,
+      name,
       image: currentImage,
-      quantity: quantity,
+      quantity,
       price: currentPrice,
     };
 
-    let exitingProductIndex = -1;
+    const existingIndex = cart.findIndex((item) => item.productId === _id);
 
-    cart.forEach((item, index) => {
-      if (item.productId === _id) {
-        exitingProductIndex = index;
-      }
-    });
-
-    if (exitingProductIndex > -1) {
-      cart[exitingProductIndex].quantity = quantity;
+    if (existingIndex > -1) {
+      cart[existingIndex].quantity = quantity;
     } else {
       cart.push(product);
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
-
     toast.success("Product added to cart");
   };
 
   return (
-    <div className="bg-white shadow-lg rounded-lg overflow-hidden m-5 px-10 py-5 max-w-[400px] relative">
-      <span className="absolute top-0 right-0 bg-gray-500 text-white px-2 py-1 rounded-bl-lg">
+    <div className="bg-gray-800 text-white rounded-2xl shadow-lg w-full max-w-xs p-5 relative transition-transform hover:scale-105 hover:shadow-indigo-500/40">
+      <span className="absolute top-2 right-2 bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
         {category}
       </span>
-      <div className="relative h-40">
+
+      <div className="relative h-36 my-4">
         <LeftArrow
-          size={64}
-          className="absolute top-1/3 left-0 cursor-pointer"
+          size={24}
+          className="absolute top-1/2 -translate-y-1/2 left-0 z-10 cursor-pointer text-gray-400 hover:text-indigo-400"
           onClick={leftArrowClick}
         />
         <img
           src={currentImage}
           alt={name}
-          className="w-full h-40 object-contain object-center"
+          className="w-full h-full object-contain rounded-md bg-gray-700"
         />
         <RightArrow
-          size={64}
-          className="absolute top-1/3 right-0 cursor-pointer"
+          size={24}
+          className="absolute top-1/2 -translate-y-1/2 right-0 z-10 cursor-pointer text-gray-400 hover:text-indigo-400"
           onClick={rightArrowClick}
         />
       </div>
-      <p>
-        {tags.map((tag) => {
-          return (
-            <span className="bg-gray-200 text-gray-500 px-3 py-1 text-xs rounded-full mr-2">
-              {tag}
-            </span>
-          );
-        })}
-      </p>
-      <h1 className="font-bold text-xl">{shortText(name, 30)}</h1>
-      <p className="text-sm">{shortText(shortDescription, 70)}</p>
 
-      <p className="text-2xl my-2">
-        ₹ <del>{price}</del> <span className="font-bold">{currentPrice}</span>/-
+      <div className="mb-2 flex flex-wrap gap-2">
+        {tags?.map((tag, idx) => (
+          <span
+            key={idx}
+            className="bg-gray-700 text-gray-300 px-2 py-1 text-xs rounded-full"
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+
+      <h2 className="font-semibold text-lg">{shortText(name, 40)}</h2>
+      <p className="text-sm text-gray-400 mb-2">
+        {shortText(shortDescription, 80)}
       </p>
 
-      <div className="flex justify-center items-center">
+      <p className="text-xl mb-3">
+        <del className="text-red-400 mr-2">₹{price}</del>
+        <span className="font-bold text-green-400">₹{currentPrice}</span>
+      </p>
+
+      <div className="flex justify-center items-center mb-4">
         <MinusIcon
-          className="cursor-pointer"
-          onClick={() => setQuantity(quantity - 1)}
+          className={`cursor-pointer ${
+            quantity <= 1 ? "text-gray-600" : "text-white hover:text-indigo-300"
+          }`}
+          onClick={() => quantity > 1 && setQuantity(quantity - 1)}
         />
-        <span className="mx-2 text-xl">{quantity}</span>
+        <span className="mx-3 text-lg font-medium">{quantity}</span>
         <PlusIcon
-          className="cursor-pointer"
+          className="cursor-pointer text-white hover:text-indigo-300"
           onClick={() => setQuantity(quantity + 1)}
         />
       </div>
 
-      <div className="flex justify-center mt-5">
-        <Button
-          label="Add To Cart"
-          variant="primary"
-          onClick={handleAddToCart}
-        />
+      <div className="flex justify-center">
+        <Button label="Add to Cart" variant="primary" onClick={handleAddToCart} />
       </div>
     </div>
   );
