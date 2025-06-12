@@ -49,7 +49,7 @@ app.post("/products", jwtVerifyMiddleware, checkRoleMiddleware, postProducts);
 app.get("/products", getProducts)
 
 //Orders
-app.post("/orders", jwtVerifyMiddleware, postOrders);
+app.post("/api/orders", jwtVerifyMiddleware, postOrders);
 app.put("/orders/:id", jwtVerifyMiddleware, putOrders);
 app.get("/api/orders/:id", jwtVerifyMiddleware, getOrderById);
 app.get("/orders/user/:id", jwtVerifyMiddleware, getOrdersByUserId)
