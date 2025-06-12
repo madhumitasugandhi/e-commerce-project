@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import ProductCard from '../components/ProductCard';
+import { ShoppingCart as ShoppingCartIcon, } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 function Home() {
   const [products, setProducts] = useState([]);
@@ -49,7 +51,10 @@ function Home() {
           <p className="text-gray-400 mt-10 text-lg">No products found.</p>
         )}
       </div>
-
+      <Link to="/user/cart" className="fixed top-10 right-10 border-2 p-2.5 rounded-full ">
+          <ShoppingCartIcon size={30}/>
+          
+      </Link>
       <Toaster position="top-right" />
     </div>
   );

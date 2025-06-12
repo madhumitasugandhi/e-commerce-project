@@ -60,7 +60,7 @@ function ProductCard({
   };
 
   return (
-    <div className="bg-gray-800 text-white rounded-2xl shadow-lg w-full max-w-xs p-5 relative transition-transform hover:scale-105 hover:shadow-indigo-500/40">
+    <div className="bg-gray-800 text-white rounded-2xl shadow-lg w-full max-w-xs p-8 m-6 relative transition-transform hover:scale-105 hover:shadow-indigo-500/40">
       <span className="absolute top-2 right-2 bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
         {category}
       </span>

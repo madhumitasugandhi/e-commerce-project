@@ -9,6 +9,7 @@ import Home from "./views/Home";
 import NotFound from "./views/NotFound";
 import Dashboard from "./views/Dashboard";
 import UserOrder from "./views/UserOrder";  
+import Cart from "./views/Cart";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 const router = createBrowserRouter([
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
   {
     "path": "/user/orders",
     element: <UserOrder/>
+  },
+  {
+    "path": "/user/cart",
+    element: <Cart/>
   },
   {
     "path": "*",
