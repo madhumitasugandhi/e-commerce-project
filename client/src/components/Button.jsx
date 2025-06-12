@@ -14,7 +14,7 @@ const variants = {
 
   return (
     <button
-            type="submit"
+            type="button"
             onClick={onClick}
             className={`${baseStyles} ${variants[variant] || variants.primary}`}
           >{label}
