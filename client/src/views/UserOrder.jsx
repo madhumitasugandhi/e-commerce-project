@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { getCurrentUser, getJwtToken, getReadableTimestamp } from '../utils/common';
+import { getCurrentUser, getReadableTimestamp, api } from '../utils/common';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import OrderCard from '../components/OrderCard';
 import { SquareX as CancelIcon } from 'lucide-react';
+
+
 
 function UserOrder() {
   const [user, setUser] = useState({});
@@ -17,11 +19,12 @@ function UserOrder() {
       return;
     }
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/orders/user/${user._id}`, {
-        headers: { Authorization: getJwtToken() },
-      });
+
+      const response = await api.get(`/orders/user/${user._id}`);
       setOrders(response.data.data);
+
     } catch (error) {
+      
       console.error('Error fetching user orders:', error);
       toast.error('Failed to load orders. Please try again later.');
     }

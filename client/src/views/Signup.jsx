@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 //Signup.jsx component
 import Button from "../components/Button.jsx";
 import Input from "../components/Input.jsx";
-import { getCurrentUser } from '../utils/common';
+import { getCurrentUser, api } from '../utils/common';
 
 function Signup() {
   const [signupData, setSignupData] = useState({
@@ -22,8 +22,8 @@ function Signup() {
 const processSignup = async () => {
   toast.loading("Please wait, signing up...");
   try {
-    const response = await axios.post(`
-      ${import.meta.env.VITE_API_URL}/signup`, 
+    const response = await api.post(`
+      /signup`, 
       signupData
     
     );

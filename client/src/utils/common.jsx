@@ -1,4 +1,4 @@
-
+import axios from "axios";
 
 const getCurrentUser = () => {
     const user = localStorage.getItem("e-commerce-user-details");
@@ -59,4 +59,9 @@ const shortText = (text, maxLength = 50) => {
   return shortText;
 };
 
-export { getCurrentUser, getJwtToken, logout, getReadableTimestamp, shortText };
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true,
+})
+
+export { getCurrentUser, getJwtToken, logout, getReadableTimestamp, shortText, api };

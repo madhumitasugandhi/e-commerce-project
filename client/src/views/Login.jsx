@@ -7,8 +7,8 @@ import { Link } from "react-router-dom";
 //Signup.jsx component
 import Button from "../components/Button.jsx";
 import Input from "../components/Input.jsx";
-import { use } from "react";
-import { getCurrentUser } from '../utils/common';
+import { getCurrentUser , api} from '../utils/common';
+
 
 function Login() {
   const [loginData, setLoginData] = useState({
@@ -16,13 +16,12 @@ function Login() {
     password: "",
   });
 
+const [error, setError] = useState("");
+
   const processLogin = async () => {
     toast.loading("Please wait, signing up...");
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/login`,
-        loginData
-      );
+       const response = await api.post(`/login`, loginData);
       localStorage.setItem("e-commerce-user-token", response.data.token);
       localStorage.setItem("e-commerce-user-details",JSON.stringify(response.data.data));
 
@@ -47,8 +46,7 @@ function Login() {
     }
   };
 
-  const [error, setError] = useState("");
-
+  
   useEffect(() => {
     // Check if user is already logged in
     // If logged in, redirect to dashboard

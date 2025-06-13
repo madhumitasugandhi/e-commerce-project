@@ -3,7 +3,7 @@ import toast, { Toaster } from "react-hot-toast";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import axios from "axios";
-import { getJwtToken } from "../utils/common";
+import { getJwtToken, api} from "../utils/common";
 
 function Cart() {
   const [cart, setCart] = useState([]);
@@ -51,7 +51,7 @@ function Cart() {
       phone,
     };
 
-    await axios.post(`${import.meta.env.VITE_API_URL}/orders`, orderBody, {
+    await api.post(`/orders`, orderBody, {
       headers: { Authorization: getJwtToken() },
     });
 

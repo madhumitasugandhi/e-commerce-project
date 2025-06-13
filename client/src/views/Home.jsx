@@ -4,6 +4,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import ProductCard from '../components/ProductCard';
 import { ShoppingCart as ShoppingCartIcon, } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import{ api} from '../utils/common';
 
 function Home() {
   const [products, setProducts] = useState([]);
@@ -11,8 +12,8 @@ function Home() {
 
   const loadProducts = async () => {
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/products?search=${search}`,
+      const response = await api.get(
+        `/products?search=${search}`,
         {
           headers: {
             Authorization: localStorage.getItem('e-commerce-user-token') || '',
