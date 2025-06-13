@@ -111,6 +111,8 @@ const postLogin = async (req, res) => {
 
         res.setHeader("Authorization", `Bearer ${jwtToken}`);
 
+        req.session.jwtToken = jwtToken;
+        
         return res.status(200).json({
             success: true,
             token: jwtToken,

@@ -2,8 +2,12 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import session from "express-session";
 dotenv.config();
-import { jwtVerifyMiddleware, checkRoleMiddleware } from './middlewares/auth.js'
+import { 
+    jwtVerifyMiddleware,
+     checkRoleMiddleware 
+    } from './middlewares/auth.js'
 
 //User Controllers
 import { postSignup, postLogin } from './controllers/user.js';
@@ -19,11 +23,17 @@ import { postPayments} from './controllers/payment.js'
 
 // Utils -- responder function work as black box to send response
 import { responder } from './utils/utils.js';
+import { Cookie } from 'express-session';
 
 const app = express();
 app.use(express.json());
-app.use(cors());
-
+app.use(cors(
+    {
+    origin: "http://localhost:5173",
+    credentials: true,
+    }
+));
+app.use(session({secret: "test session", cookie:{maxAge:1000 * 60 * 60, httpOnly: false, secure: false}}));
 
 const connectDB = async () => {
     const conn = await mongoose.connect(process.env.MONGO_URI);
@@ -34,9 +44,10 @@ const connectDB = async () => {
 };
 
 // Basic API
-app.get("/health", (req, res) => {
+app.get("/health", jwtVerifyMiddleware,(req, res) => {
     return responder(res, true, "Server is running");
 });
+
 
 //API for E-commerce application
 
