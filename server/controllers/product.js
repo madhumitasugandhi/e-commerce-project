@@ -52,9 +52,22 @@ const postProducts = async (req, res) => {
 
 const getProducts = async(req,res)=>{
 
-    const {limit, search} = req.query;
+    const {limit} = req.query;
 
-   const product = await Product.find(
+    let {search }= req.query;
+
+    search= search.replaceAll("\\", "");
+
+   const product = await Product.find({
+    $or:[
+        {
+            name:{
+                $regex: new RegExp (search || ""),
+                $options: "i",
+            },
+        },
+    ]
+   }
 
    ).limit(parseInt(limit || 10)).select("-__v -createdAt -updatedAt");
 

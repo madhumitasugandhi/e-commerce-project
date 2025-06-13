@@ -6,14 +6,15 @@ const postOrders = async (req, res) => {
   const { products, deliveryAddress, phone, paymentMode } = req.body;
 
   if (!products || !deliveryAddress || !phone || !paymentMode) {
-    return responder(
-      res,
-      false,
-      `products, totalBill, deliveryAddress, phone, paymentMode are required`,
-      null,
-      400
-    );
-  }
+  return responder(
+    res,
+    false,
+    `products, deliveryAddress, phone, and paymentMode are required`,
+    null,
+    400
+  );
+}
+
 
   let totalBill = 0;
 
