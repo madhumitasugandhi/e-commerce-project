@@ -1,105 +1,88 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Mail as MailIcon,
-    IdCard as NameIcon,
-    KeySquare as RoleIcon,
-    LogOut as LogoutIcon,
-    ShoppingCart as ShoppingCartIcon,
+  Mail as MailIcon,
+  IdCard as NameIcon,
+  KeySquare as RoleIcon,
+  LogOut as LogoutIcon,
+  ShoppingCart as ShoppingCartIcon,
 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 
-// Importing utility functions and components
 import { getCurrentUser, logout } from '../utils/common';
 import Button from '../components/Button';
 
-const UserDetaileRow = ({ value, icon }) => {
-    return (
-        <p className="flex items-center justify-start px-3 py-2 rounded-lg bg-gray-900 border border-gray-700">
-            {icon}<span className='ms-4'>{value}</span>
-        </p>
-    )
-}
+const UserDetailRow = ({ value, icon }) => (
+  <p className="flex items-center justify-start px-3 py-2 rounded-lg bg-gray-900 border border-gray-700">
+    {icon}<span className="ms-4">{value}</span>
+  </p>
+);
 
 function Dashboard() {
-    const [user, setUser] = useState({
-        name: '',
-        email: '',
-        role: '',
-    });
+  const [user, setUser] = useState({
+    name: '',
+    email: '',
+    role: '',
+  });
 
-    useEffect(() => {
-        const user = getCurrentUser();
-        if (user) {
-            setUser(user);
-        }
-        else {
-            toast.error("User not found, please login again.");
-            setTimeout(() => {
-                window.location.href = "/login";
-            }, 2000);
-        }
-    }, []);
+  useEffect(() => {
+    const user = getCurrentUser();
+    if (user) {
+      setUser(user);
+    } else {
+      toast.error("User not found, please login again.");
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 2000);
+    }
+  }, []);
 
-    const handleLogout = () => {
-        console.log('Logging out...');
-    };
+  const handleLogout = () => {
+    toast.success('Logging out...');
+    logout();
+    setTimeout(() => {
+      window.location.href = "/login";
+    }, 1000);
+  };
 
-    return (
-        <div className="bg-gray-900 min-h-screen">
-            <h1 className="text-white text-3xl sm:text-3xl font-extrabold pt-6 sm:pt-8 mb-4 sm:mb-6 text-center tracking-tight">
-                Dashboard
-            </h1>
-            <div className="flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8 sm:py-10 relative overflow-hidden">
+  return (
+    <div className="bg-gray-900 min-h-screen">
+      <h1 className="text-white text-3xl font-extrabold pt-6 mb-6 text-center">
+        Dashboard
+      </h1>
 
-                <div className="relative bg-gray-800 max-w-md w-full rounded-xl shadow-2xl border border-gray-700 p-5 sm:p-8 z-10">
-                    <div className='flex mb-4 -mt-6 p-1'>
-                        <Link to="/user/orders" className="flex items-center justify-center text-sm">
-                            <div>
-                                <ShoppingCartIcon size={30} className="text-white mx-auto mb-4 inline" />
-                                <span className='text-white p-3 '>My Orders</span>
-                            </div>
-                        </Link>
-                        <Link to="/user/orders" className="flex items-center justify-center text-sm ">
-                            <div>
-                                <ShoppingCartIcon size={30} className="text-white mx-auto mb-4 inline" />
-                                <span className='text-white p-3 '>My Orders</span>
-                            </div>
-                        </Link>
-                        <Link to="/user/orders" className="flex items-center justify-center text-sm ">
-                            <div>
-                                <ShoppingCartIcon size={30} className="text-white mx-auto mb-4 inline" />
-                                <span className='text-white p-3'>My Orders</span>
-                            </div>
-                        </Link>
-                    </div>
-                    <div className="space-y-4 text-sm sm:text-base text-white">
-                        <UserDetaileRow value={user.name} icon={<NameIcon size={18} />} />
-                        <UserDetaileRow value={user.email} icon={<MailIcon size={18} />} />
-                        <UserDetaileRow value={user.role} icon={<RoleIcon size={18} />} />
+      <div className="flex justify-center px-4 py-8">
+        <div className="bg-gray-800 max-w-md w-full rounded-xl shadow-2xl border border-gray-700 p-6 relative">
+          <div className="flex justify-center gap-6 mb-6">
+            <Link to="/user/orders" className="flex flex-col items-center text-sm text-white hover:text-gray-300 transition">
+              <ShoppingCartIcon size={28} />
+              <span className="mt-2">My Orders</span>
+            </Link>
+          </div>
 
-                        <div className="flex justify-center mt-6">
-                            <Button
-                                variant="primary"
-                                onClick={() => {
-                                    toast.success('Logging out...');
-                                    logout();
-                                }}
-                                label={
-                                    <span className="flex items-center gap-2 px-4">
-                                        Logout
-                                        <LogoutIcon size={16} />
-                                    </span>
-                                }
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
+          <div className="space-y-4 text-sm sm:text-base text-white">
+            <UserDetailRow value={user.name} icon={<NameIcon size={18} />} />
+            <UserDetailRow value={user.email} icon={<MailIcon size={18} />} />
+            <UserDetailRow value={user.role} icon={<RoleIcon size={18} />} />
+          </div>
 
-            <Toaster />
+          <div className="flex justify-center mt-8">
+            <Button
+              variant="primary"
+              onClick={handleLogout}
+              label={
+                <span className="flex items-center gap-2 px-4">
+                  Logout <LogoutIcon size={16} />
+                </span>
+              }
+            />
+          </div>
         </div>
-    );
+      </div>
+
+      <Toaster />
+    </div>
+  );
 }
 
 export default Dashboard;
