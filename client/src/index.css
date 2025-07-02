@@ -1,1 +1,10 @@
 @import "tailwindcss";
+@tailwind utilities;
+
+.nav-link {
+  @apply px-4 py-2 text-gray-200 rounded-md transition hover:bg-gray-800;
+}
+
+.mobile-link {
+  @apply block px-4 py-2 text-gray-300 text-center rounded-md bg-gray-900 hover:bg-gray-700 transition;
+}

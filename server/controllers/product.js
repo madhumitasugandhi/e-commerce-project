@@ -54,7 +54,7 @@ const getProducts = async(req,res)=>{
 
     const {limit} = req.query;
 
-    let {search }= req.query;
+    let {search =" "}= req.query;
 
     search= search.replaceAll("\\", "");
 
@@ -69,7 +69,7 @@ const getProducts = async(req,res)=>{
     ]
    }
 
-   ).limit(parseInt(limit || 10)).select("-__v -createdAt -updatedAt");
+   ).limit(parseInt(limit || 100)).select("-__v -createdAt -updatedAt");
 
    return res.status(200).json({
        success: true,

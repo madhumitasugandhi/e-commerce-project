@@ -33,7 +33,7 @@ app.use(cors(
     credentials: true,
     }
 ));
-app.use(session({secret: "test session", cookie:{maxAge:1000 * 60 * 60, httpOnly: false, secure: false}}));
+app.use(session({secret: "test session", cookie:{maxAge:1000 * 60 * 60, httpOnly: false, secure: false}, resave : true,  saveUninitialized : true} ));
 
 const connectDB = async () => {
     const conn = await mongoose.connect(process.env.MONGO_URI);
