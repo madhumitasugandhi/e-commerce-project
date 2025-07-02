@@ -12,7 +12,7 @@ const Hero = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % carouselImages.length);
-    }, 4000); 
+    }, 5000); 
     return () => clearInterval(interval);
   }, []);
 
