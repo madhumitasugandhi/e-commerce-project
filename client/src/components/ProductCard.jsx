@@ -60,15 +60,15 @@ function ProductCard({
   };
 
   return (
-    <div className="bg-gray-800 text-white rounded-2xl shadow-lg w-full max-w-xs p-8 m-6 relative transition-transform hover:scale-105 hover:shadow-indigo-500/40">
+    <div className="bg-gray-800 text-white rounded-2xl shadow-lg w-full max-w-sm sm:max-w-xs  mx-auto py-4 sm:p-6 md:p-8 m-4 relative transition-transform hover:scale-105 hover:shadow-indigo-500/40">
       <span className="absolute top-2 right-2 bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
         {category}
       </span>
 
-      <div className="relative h-36 my-4">
+      <div className="relative h-40 sm:h-36 md:h-44 my-4">
         <LeftArrow
-          size={24}
-          className="absolute top-1/2 -translate-y-1/2 left-0 z-10 cursor-pointer text-gray-400 hover:text-indigo-400"
+          size={20}
+          className="absolute top-1/2 -translate-y-1/2 left-1 z-10 cursor-pointer text-gray-400 hover:text-indigo-400"
           onClick={leftArrowClick}
         />
         <img
@@ -77,13 +77,13 @@ function ProductCard({
           className="w-full h-full object-contain rounded-md bg-gray-700"
         />
         <RightArrow
-          size={24}
-          className="absolute top-1/2 -translate-y-1/2 right-0 z-10 cursor-pointer text-gray-400 hover:text-indigo-400"
+          size={20}
+          className="absolute top-1/2 -translate-y-1/2 right-1 z-10 cursor-pointer text-gray-400 hover:text-indigo-400"
           onClick={rightArrowClick}
         />
       </div>
 
-      <div className="mb-2 flex flex-wrap gap-2">
+      <div className="mb-2 flex flex-wrap justify-center gap-2">
         {tags?.map((tag, idx) => (
           <span
             key={idx}
@@ -94,12 +94,14 @@ function ProductCard({
         ))}
       </div>
 
-      <h2 className="font-semibold text-lg">{shortText(name, 40)}</h2>
-      <p className="text-sm text-gray-400 mb-2">
+      <h2 className="font-semibold text-base sm:text-lg text-center">
+        {shortText(name, 40)}
+      </h2>
+      <p className="text-sm text-gray-400 mb-2 text-center">
         {shortText(shortDescription, 80)}
       </p>
 
-      <p className="text-xl mb-3">
+      <p className="text-center text-lg mb-3">
         <del className="text-red-400 mr-2">₹{price}</del>
         <span className="font-bold text-green-400">₹{currentPrice}</span>
       </p>
