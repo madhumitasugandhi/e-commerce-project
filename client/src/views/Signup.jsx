@@ -2,9 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
-import { Link } from "react-router-dom";
-
-//Signup.jsx component
+import { Link } from "react-router-dom"
 import Button from "../components/Button.jsx";
 import Input from "../components/Input.jsx";
 import { getCurrentUser, api } from '../utils/common';
@@ -22,8 +20,7 @@ function Signup() {
 const processSignup = async () => {
   toast.loading("Please wait, signing up...");
   try {
-    const response = await api.post(`
-      /signup`, 
+    const response = await api.post(`/signup`, 
       signupData
     
     );

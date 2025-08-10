@@ -44,7 +44,7 @@ const connectDB = async () => {
 };
 
 // Basic API
-app.get("/health", jwtVerifyMiddleware,(req, res) => {
+app.get("/health",(req, res) => {
     return responder(res, true, "Server is running");
 });
 
