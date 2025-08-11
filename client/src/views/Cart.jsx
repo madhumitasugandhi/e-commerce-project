@@ -38,14 +38,14 @@ function Cart() {
       toast.error("Please fill all fields");
       return;
     }
-
     localStorage.setItem("address", address);
     localStorage.setItem("phone", phone);
 
     try {
       const orderBody = {
+        name,
         products: cart.map((p) => ({
-          productId: p._id,
+          productId: p.productId || p._id,
           quantity: p.quantity,
           price: p.price,
         })),
@@ -54,15 +54,21 @@ function Cart() {
         phone,
       };
 
-      await api.post("/orders", orderBody, {
-  headers: { Authorization: getJwtToken() },
-});
+      const token = getJwtToken();
 
-      toast.success("Order placed!");
-      localStorage.removeItem("cart");
+      const res = await api.post("/api/orders", orderBody, {
+        headers: { Authorization: token },
+      });
 
-      setTimeout(() => (window.location.href = "/user/orders"), 1500);
-    } catch {
+      if (res.data.success) {
+        toast.success("Order placed!");
+        localStorage.removeItem("cart");
+        setTimeout(() => (window.location.href = "/user/orders"), 1500);
+      } else {
+        toast.error(res.data.message || "Order failed");
+      }
+    } catch (err) {
+      console.error(err);
       toast.error("Failed to place order");
     }
   };
@@ -100,10 +106,15 @@ function Cart() {
               label="Continue to Payment"
               variant="primary"
               onClick={() => {
-                setIsCheckoutOpen(false);
-                setIsPaymentOpen(true);
+                if (paymentMode === "COD") {
+                  placeOrder(); // Direct order place
+                } else {
+                  setIsCheckoutOpen(false);
+                  setIsPaymentOpen(true);
+                }
               }}
             />
+
           </div>
         </div>
       </div>
