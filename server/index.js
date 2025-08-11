@@ -61,9 +61,9 @@ app.get("/products", getProducts)
 
 //Orders
 app.post("/api/orders", jwtVerifyMiddleware, postOrders);
-app.put("/orders/:id", jwtVerifyMiddleware, putOrders);
+app.put("/api/orders/:id", jwtVerifyMiddleware, putOrders);
 app.get("/api/orders/:id", jwtVerifyMiddleware, getOrderById);
-app.get("/orders/user/:id", jwtVerifyMiddleware, getOrdersByUserId)
+app.get("/api/orders/user/:id", jwtVerifyMiddleware, getOrdersByUserId);
 
 //Payment
 app.post("/payments", postPayments)
