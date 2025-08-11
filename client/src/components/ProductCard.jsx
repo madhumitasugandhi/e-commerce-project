@@ -74,7 +74,7 @@ function ProductCard({
         <img
           src={currentImage}
           alt={name}
-          className="w-full h-full object-contain rounded-md bg-gray-700"
+          className="w-full h-52 object-cover rounded-md bg-gray-700"
         />
         <RightArrow
           size={20}
@@ -108,9 +108,8 @@ function ProductCard({
 
       <div className="flex justify-center items-center mb-4">
         <MinusIcon
-          className={`cursor-pointer ${
-            quantity <= 1 ? "text-gray-600" : "text-white hover:text-indigo-300"
-          }`}
+          className={`cursor-pointer ${quantity <= 1 ? "text-gray-600" : "text-white hover:text-indigo-300"
+            }`}
           onClick={() => quantity > 1 && setQuantity(quantity - 1)}
         />
         <span className="mx-3 text-lg font-medium">{quantity}</span>
