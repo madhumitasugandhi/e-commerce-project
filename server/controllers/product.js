@@ -50,32 +50,45 @@ const postProducts = async (req, res) => {
 
 };
 
-const getProducts = async(req,res)=>{
+const getProducts = async (req, res) => {
+  try {
+    let { limit, search = "" } = req.query;
 
-    const {limit} = req.query;
+    // Ensure limit is a number or default 100
+    const parsedLimit = Number(limit) || 100;
 
-    let {search =" "}= req.query;
+    // Ensure search is a string
+    if (typeof search !== "string") {
+      search = "";
+    }
 
-    search= search.replaceAll("\\", "");
+    search = search.replaceAll("\\", "");
 
-   const product = await Product.find({
-    $or:[
+    const products = await Product.find({
+      $or: [
         {
-            name:{
-                $regex: new RegExp (search || ""),
-                $options: "i",
-            },
+          name: {
+            $regex: new RegExp(search, "i"),
+          },
         },
-    ]
-   }
+      ],
+    })
+      .limit(parsedLimit)
+      .select("-__v -createdAt -updatedAt");
 
-   ).limit(parseInt(limit || 100)).select("-__v -createdAt -updatedAt");
-
-   return res.status(200).json({
-       success: true,
-       data: product,
-       message: "Products fetched successfully."
-   });
+    return res.status(200).json({
+      success: true,
+      data: products,
+      message: "Products fetched successfully.",
+    });
+  } catch (error) {
+    console.error("Error in getProducts:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
+
 
 export { postProducts, getProducts };
