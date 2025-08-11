@@ -90,7 +90,7 @@ function ProductCard({
         {tags?.map((tag, idx) => (
           <span
             key={idx}
-            className="bg-gray-700 text-gray-300 px-2 py-1 text-xs rounded-full"
+            className="bg-gray-700 text-gray-300 mt-8 px-2 py-1 text-xs rounded-full"
           >
             {tag}
           </span>
