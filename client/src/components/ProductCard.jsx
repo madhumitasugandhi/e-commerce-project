@@ -71,11 +71,14 @@ function ProductCard({
           className="absolute top-1/2 -translate-y-1/2 left-1 z-10 cursor-pointer text-gray-400 hover:text-indigo-400"
           onClick={leftArrowClick}
         />
-        <img
-          src={currentImage}
-          alt={name}
-          className="w-full h-52 object-cover rounded-md bg-gray-700"
-        />
+        <div className="w-full h-52 overflow-hidden rounded-md bg-gray-700">
+          <img
+            src={currentImage}
+            alt={name}
+            className="w-full h-full object-cover"
+          />
+        </div>
+
         <RightArrow
           size={20}
           className="absolute top-1/2 -translate-y-1/2 right-1 z-10 cursor-pointer text-gray-400 hover:text-indigo-400"
