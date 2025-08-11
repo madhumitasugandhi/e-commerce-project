@@ -3,30 +3,47 @@ import Order from "../models/Order.js";
 import { responder } from "./../utils/utils.js";
 
 const postOrders = async (req, res) => {
-  const { products, deliveryAddress, phone, paymentMode } = req.body;
-
-  if (!products || !deliveryAddress || !phone || !paymentMode) {
-  return responder(
-    res,
-    false,
-    `products, deliveryAddress, phone, and paymentMode are required`,
-    null,
-    400
-  );
-}
-
-
-  let totalBill = 0;
-
-  products.forEach((product) => {
-    totalBill += product.price * product.quantity;
-  });
-
   try {
+    console.log("JWT user:", req.user); // debug
+    console.log("Body received:", req.body); // debug
+
+    if (!req.user || !req.user._id) {
+      return responder(res, false, "Unauthorized. User not found.", null, 401);
+    }
+
+    const { products, deliveryAddress, phone, paymentMode } = req.body;
+
+    // Check required fields
+    if (
+      !Array.isArray(products) ||
+      products.length === 0 ||
+      !deliveryAddress ||
+      !phone ||
+      !paymentMode
+    ) {
+      return responder(
+        res,
+        false,
+        "products[], deliveryAddress, phone, and paymentMode are required",
+        null,
+        400
+      );
+    }
+
+    // Calculate total bill
+    let totalBills = 0;
+    products.forEach((product) => {
+      if (!product.productId || !product.price || !product.quantity) {
+        throw new Error("Each product must have productId, price, and quantity");
+      }
+      totalBill += product.price * product.quantity;
+    });
+
+    // Create and save new order
     const newOrder = new Order({
       userId: req.user._id,
       products,
-      totalBill,
+      totalBills,
       deliveryAddress,
       phone,
       paymentMode,
@@ -36,7 +53,8 @@ const postOrders = async (req, res) => {
 
     return responder(res, true, "Order placed successfully", savedOrder, 201);
   } catch (error) {
-    return responder(res, false, error.message, null, 400);
+    console.error("Order placement error:", error.message);
+    return responder(res, false, error.message, null, 500);
   }
 };
 
